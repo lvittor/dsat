@@ -17,7 +17,9 @@ int main(int argc, char *argv[]) {
     char pathBuffer[BUFFER_SIZE];
     char cmd[CMD_SIZE];
 
-    while (!fgetsn(pathBuffer, BUFFER_SIZE, stdin)) {
+    write(STDOUT_FILENO, "aaa", 4);
+
+    while (! fgetsn(pathBuffer, BUFFER_SIZE, stdin)) {
         if (fileIsReg(pathBuffer)) {
             if (getCommand(cmd, CMD_SIZE, pathBuffer, CMD, FILTER)) 
                 fexit("Error: couldn't concatenate command to file or filter strings");
@@ -25,11 +27,13 @@ int main(int argc, char *argv[]) {
             if ((fp = popen(cmd, "r")) == NULL)
                 fexit("Error: couldn't run minisat");
             
-            while (fgets(buffer, BUFFER_SIZE, fp) != NULL)
+            while (fgets(buffer, BUFFER_SIZE, fp) != NULL) {
                 printf("%s", buffer);
+                fflush(stdout);
+            }
 
         } else
-            perror("Error: given path is not a regular file"); 
+            perror("Error: given path is not a regular file");
     }
 
     return EXIT_SUCCESS;
