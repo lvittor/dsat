@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 
 # Binaries
-out/
+out/*
 
 # Env file
 .env

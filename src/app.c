@@ -45,6 +45,7 @@ int main(int argc, char * argv[]) {
             // dup2(appPipes.in[i][WRITE], STDERR_FILENO);
 
             execl("out/slave", "slave", (char *)NULL);
+            fexit("Error: Couldn't run slave");
         } else { // app
             // close(appPipes.out[i][READ]);
             // close(appPipes.in[i][WRITE]);
@@ -54,8 +55,8 @@ int main(int argc, char * argv[]) {
     for (int i = 0; i < SLAVES; i++) {
         close(appPipes.out[i][READ]);
         close(appPipes.in[i][WRITE]);
-        
-        write(appPipes.out[i][WRITE], argv[i+1], strlen(argv[i+1]));
+        write(appPipes.out[i][WRITE], argv[i+1], strlen(argv[i+1]) + 1);
+        write(appPipes.out[i][WRITE], "\n", 1);
     }
 
     sleep(5);
@@ -65,7 +66,7 @@ int main(int argc, char * argv[]) {
     int ready, nfds = 0;
     ssize_t nbytes;
     fd_set readfds;
-    char buffer[50];
+    char buffer[MAX_SLAVE_OUTPUT];
 
     //int currfd = appPipes.in[i][READ];
 
@@ -85,7 +86,8 @@ int main(int argc, char * argv[]) {
         int fd = appPipes.in[j][READ];
         
         if (FD_ISSET(fd, &readfds)) {
-            nbytes = read(fd, buffer, 50);
+            nbytes = read(fd, buffer, MAX_SLAVE_OUTPUT);
+            buffer[nbytes] = '\0';
 
             if (nbytes >= 1){
                 printf("{%s}\n", buffer);
@@ -93,8 +95,6 @@ int main(int argc, char * argv[]) {
             }
         }
     }
-    // }
-
 
     return EXIT_SUCCESS;
 }

@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "utils.h"
+#include "app.h"
 
 #define BUFFER_SIZE 50
 #define CMD_SIZE 1024
@@ -16,8 +17,7 @@ int main(int argc, char *argv[]) {
     char buffer[BUFFER_SIZE];
     char pathBuffer[BUFFER_SIZE];
     char cmd[CMD_SIZE];
-
-    write(STDOUT_FILENO, "aaa", 4);
+    char output[MAX_SLAVE_OUTPUT];
 
     while (! fgetsn(pathBuffer, BUFFER_SIZE, stdin)) {
         if (fileIsReg(pathBuffer)) {
@@ -27,10 +27,17 @@ int main(int argc, char *argv[]) {
             if ((fp = popen(cmd, "r")) == NULL)
                 fexit("Error: couldn't run minisat");
             
-            while (fgets(buffer, BUFFER_SIZE, fp) != NULL) {
-                printf("%s", buffer);
-                fflush(stdout);
+            snprintf(output, MAX_SLAVE_OUTPUT, "Filename:\t%s\n", pathBuffer);
+            while (! fgetsn(buffer, BUFFER_SIZE, fp)) {
+                strncat(output, buffer, MAX_SLAVE_OUTPUT);
+                strncat(output, "\n", MAX_SLAVE_OUTPUT);
             }
+
+            snprintf(buffer, BUFFER_SIZE, "PID:\t%ld\n", (long)getpid());
+            strncat(output, buffer, MAX_SLAVE_OUTPUT);
+            
+            printf("%s", output);
+            fflush(stdout);
 
         } else
             perror("Error: given path is not a regular file");

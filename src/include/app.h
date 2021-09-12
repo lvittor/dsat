@@ -3,4 +3,6 @@
 
 #define SLAVES 5
 
+#define MAX_SLAVE_OUTPUT 256
+
 #endif
