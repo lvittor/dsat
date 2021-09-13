@@ -7,7 +7,8 @@
 
 #define OUTPUT_FILE_NAME "res.txt"
 
-#define SHARED_MEM_NAME "/dsat_shm"
-#define SEM_COUNT_NAME  "/dsat_sem"
+#define WAIT_SECONDS_VIEW 2
+
+#define SHARED_MEM_NAME "/shm"
 
 #endif
