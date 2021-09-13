@@ -10,6 +10,7 @@ APP_FILES=src/app.c
 SLAVE_FILES=src/slave.c
 VIEW_FILES=src/view.c
 UTILS_FILES=src/utils.c
+SHMADT_FILES=src/shmADT.c
 CFLAGS=-pedantic -std=gnu99 -Wall -fsanitize=address -lrt -pthread
 OUTPUT_APP=app
 OUTPUT_SLAVE=slave
@@ -26,9 +27,9 @@ check:
 	plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
 
 all: 
-	$(COMPILER) $(CFLAGS) $(INC_FLAGS) -o $(OUT_FOLDER)/$(OUTPUT_APP) $(APP_FILES) $(UTILS_FILES)
+	$(COMPILER) $(CFLAGS) $(INC_FLAGS) -o $(OUT_FOLDER)/$(OUTPUT_APP) $(APP_FILES) $(UTILS_FILES) $(SHMADT_FILES)
 	$(COMPILER) $(CFLAGS) $(INC_FLAGS) -o $(OUT_FOLDER)/$(OUTPUT_SLAVE) $(SLAVE_FILES) $(UTILS_FILES)
-	$(COMPILER) $(CFLAGS) $(INC_FLAGS) -o $(OUT_FOLDER)/$(OUTPUT_VIEW) $(VIEW_FILES) $(UTILS_FILES) 
+	$(COMPILER) $(CFLAGS) $(INC_FLAGS) -o $(OUT_FOLDER)/$(OUTPUT_VIEW) $(VIEW_FILES) $(UTILS_FILES) $(SHMADT_FILES)
 
 clean:
 	rm -rf ${OUT_FOLDER}/*
