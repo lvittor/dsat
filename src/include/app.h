@@ -1,9 +1,7 @@
 #ifndef __APP_H__
 #define __APP_H__
 
-#define MAX_SLAVE_COUNT 5
-#define INITIAL_FILES_PER_SLAVE 2
-#define MAX_SLAVE_OUTPUT 256
+#define NUMBER_SLAVES_REQUEST 5
 
 #define OUTPUT_FILE_NAME "res.txt"
 

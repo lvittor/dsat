@@ -20,9 +20,9 @@
 typedef struct shmCDT * shmADT;
 
 /**
- * @brief creates a new shared memory object
+ * @brief Creates a new shared memory object
  * 
- * @return shmADT a pointer to the shared memory
+ * @return shmADT returns a pointer to the shared memory
  */
 shmADT newShm();
 
@@ -75,7 +75,7 @@ int unlinkShm(shmADT shm);
 
 
 /**
- * @brief frees the shared memory
+ * @brief Frees the shared memory
  * 
  * @param shm a shmADT previously created
  */

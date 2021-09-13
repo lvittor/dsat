@@ -11,6 +11,7 @@
 #define CMD_SIZE 1024
 #define CMD "minisat"
 #define FILTER "grep -o -e \"Number of.*[0-9]\\+\" -e \"CPU time.*\" -e \".*SATISFIABLE\""
+#define DELIMITER ", "
 
 int main(int argc, char *argv[]) {
     FILE * fp;
@@ -25,18 +26,18 @@ int main(int argc, char *argv[]) {
                 fexit("Error: couldn't concatenate command to file or filter strings");
 
             if ((fp = popen(cmd, "r")) == NULL)
-                fexit("Error: couldn't run minisat");
+                fexit("Error: couldn't run cmd");
             
-            snprintf(output, MAX_SLAVE_OUTPUT, "Filename:\t%s\n", pathBuffer);
+            snprintf(output, MAX_SLAVE_OUTPUT, "Filename:\t%s", pathBuffer);
             while (! fgetsn(buffer, BUFFER_SIZE, fp)) {
+                strncat(output, DELIMITER , MAX_SLAVE_OUTPUT);
                 strncat(output, buffer, MAX_SLAVE_OUTPUT);
-                strncat(output, "\n", MAX_SLAVE_OUTPUT);
             }
 
-            snprintf(buffer, BUFFER_SIZE, "PID:\t%ld\n", (long)getpid());
+            snprintf(buffer, BUFFER_SIZE, "%sPID:\t%ld", DELIMITER, (long)getpid());
             strncat(output, buffer, MAX_SLAVE_OUTPUT);
             
-            printf("%s", output);
+            printf("%s\n", output);
             fflush(stdout);
 
         } else
