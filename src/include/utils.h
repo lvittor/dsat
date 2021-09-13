@@ -1,6 +1,13 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+/**
+ * @brief macros for returning the max and min 
+ *        element between a and b
+ * 
+ */
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
 
 /**
  * @brief prints the pid of the current process
