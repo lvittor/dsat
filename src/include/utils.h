@@ -1,6 +1,10 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+#include <stdio.h>
+
+#define MAX_SLAVE_OUTPUT 256
+
 /**
  * @brief macros for returning the max and min 
  *        element between a and b
@@ -22,7 +26,6 @@ void printpid();
  * @return int 1 if regular, 0 if not. In case of error returns 0 (with errno set).
  */
 int fileIsReg(const char * path);
-
 
 /**
  * @brief prints error msg to stdout and exits the process

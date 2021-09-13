@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include <string.h>
+
 #include "app.h"
 #include "utils.h"
 #include "shmADT.h"
@@ -24,7 +25,7 @@ int main(int argc, char * argv[]) {
     if (shm == NULL)
         fexit("Error: Couldn't create shared memory ADT");
         
-    if (openAndMapShm(shm, SHARED_MEM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, nfiles * MAX_SLAVE_OUTPUT, PROT_WRITE, MAP_SHARED) == SHM_ERROR)
+    if (openAndMapShm(shm, SHARED_MEM_NAME, O_RDWR, S_IRUSR | S_IWUSR, nfiles * MAX_SLAVE_OUTPUT, PROT_READ, MAP_SHARED) == SHM_ERROR)
        fexit("Error: Couldn't map shared mem");
 
     for (int i = 0; i < nfiles; i++) {
