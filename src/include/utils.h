@@ -2,10 +2,12 @@
 #define __UTILS_H__
 
 /**
- * @brief returns the max element between a and b
+ * @brief macros for returning the max and min 
+ *        element between a and b
  * 
  */
 #define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
 
 /**
  * @brief prints the pid of the current process
