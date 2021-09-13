@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <sys/select.h>
 #include <fcntl.h>
 #include <sys/mman.h>
-#include <semaphore.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <stddef.h>
 
 #include "app.h"
 #include "utils.h"
+#include "shmADT.h"
 
 typedef struct pipes_t{
     int out[MAX_SLAVE_COUNT][2];
@@ -36,27 +36,16 @@ int main(int argc, char * argv[]) {
     if (outputFile == NULL)
         fexit("Error: Coudln't open output file");
     
-    int fdShm = shm_open(SHARED_MEM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    if (fdShm == -1)
-        fexit("Error: Couldn't create shared mem");
-    
-    if (ftruncate(fdShm, shmSize) == -1)
-       fexit("Error: Couldn't truncate shared mem");
-    
-    char * pshm = mmap(NULL, shmSize, PROT_WRITE, MAP_SHARED, fdShm, 0);
-    char * wpshm = pshm;
+    shmADT shm = newShm();
+    if (shm == NULL)
+        fexit("Error: Couldn't create shared memory ADT");
+        
+    if (openAndMapShm(shm, SHARED_MEM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, shmSize, PROT_WRITE, MAP_SHARED) == SHM_ERROR)
+        fexit("Error: Couldn't open or map shared memory");
 
-    if (pshm == MAP_FAILED)
-       fexit("Error: Couldn't map shared mem");
-    
-    if (close(fdShm))
-        fexit("Error: Couldn't close shared mem file descriptor");
 
-    sem_t * semaphore = sem_open(SEM_COUNT_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
-    if (semaphore == SEM_FAILED)
-        fexit("Error: Couldn't create semaphore");
+    sleep(WAIT_SECONDS_VIEW);
 
-    sleep(2);
 
     pid_t pids[MAX_SLAVE_COUNT];
     int workingFiles[MAX_SLAVE_COUNT] = {0};
@@ -131,11 +120,8 @@ int main(int argc, char * argv[]) {
                 buffer[nbytes] = '\0';
 
                 if (nbytes >= 1) {
-                    wpshm += sprintf(wpshm, "%s", buffer);
-                    wpshm[0] = '\0';
-                    wpshm++;
+                    writeShm(shm, buffer);
                     fprintf(outputFile, "%s\n", buffer);
-                    sem_post(semaphore);
                 }
                 workingFiles[j]--;
                 if (filesSent >= nfiles) {
@@ -153,21 +139,14 @@ int main(int argc, char * argv[]) {
     for (int i = 0; i < nslaves; i++)
         if(wait(NULL) < 0)
             fexit("Error: Couldn't wait for child");
-        
-    if (sem_close(semaphore))
-        fexit("Error: Couldn't close semaphore");
     
-    if (sem_unlink(SEM_COUNT_NAME))
-        fexit("Error: Couldn't unlink semaphore");
-
-    if (munmap(pshm, shmSize))
-        fexit("Error: Couldn't unmap shared mem");
-    
-    if (shm_unlink(SHARED_MEM_NAME))
-        fexit("Error: Couldn't unlink shared mem");
-
     if (fclose(outputFile))
-        fexit("Error: Couldn't close output file");
+        fexit("Error: Couldn't close output file");    
+
+    if (unmapShm(shm) == SHM_ERROR || unlinkShm(shm) == SHM_ERROR)
+        fexit("Error: Couldn't unmap or unlink shm");
+
+    freeShm(shm);
 
     return EXIT_SUCCESS;
 }

@@ -7,9 +7,11 @@
 #include <string.h>
 #include "app.h"
 #include "utils.h"
+#include "shmADT.h"
 
 int main(int argc, char * argv[]) {
     int nfiles = 0, correct = 0;
+    char buffer[MAX_SLAVE_OUTPUT];
     if (argc > 1)
         correct = sscanf(argv[1], "%d", &nfiles);
     else
@@ -18,38 +20,23 @@ int main(int argc, char * argv[]) {
     if (correct < 1)
         fexit("Error: Couldn't parse number of files");
 
-    int fdShm = shm_open(SHARED_MEM_NAME, O_RDWR | O_CREAT, 0660);
-    if (fdShm == -1)
-        fexit("Error: Couldn't create shared mem");
-
-    int shmSize = nfiles * MAX_SLAVE_OUTPUT;
-
-    if (ftruncate(fdShm, shmSize) == -1)
-       fexit("Error: Couldn't truncate shared mem");
-    
-    char * pshm = mmap(NULL, shmSize, PROT_WRITE, MAP_SHARED, fdShm, 0);
-    if (pshm == MAP_FAILED)
+    shmADT shm = newShm();
+    if (shm == NULL)
+        fexit("Error: Couldn't create shared memory ADT");
+        
+    if (openAndMapShm(shm, SHARED_MEM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR, nfiles * MAX_SLAVE_OUTPUT, PROT_WRITE, MAP_SHARED) == SHM_ERROR)
        fexit("Error: Couldn't map shared mem");
-    
-    if (close(fdShm))
-        fexit("Error: Couldn't close shared mem file descriptor");
 
-    sem_t * semaphore = sem_open(SEM_COUNT_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0);
-    if (semaphore == SEM_FAILED)
-        fexit("Error: Couldn't create semaphore");
-
-    char * rpshm = pshm;
     for (int i = 0; i < nfiles; i++) {
-        int c = -1;
-        sem_getvalue(semaphore, &c);
-        sem_wait(semaphore);
-        rpshm += printf("%s\n", rpshm);
+        readShm(shm, buffer);
+        printf("%s\n", buffer);
         fflush(stdout);
     }
+    
+    if (unmapShm(shm) == SHM_ERROR)
+        fexit("Error: Couldn't unmap or unlink shm");
 
-    if (sem_close(semaphore))
-        fexit("Error: Couldn't close semaphore");
+    freeShm(shm);
 
-    if (munmap(pshm, shmSize))
-        fexit("Error: Couldn't unmap shared mem");
+    return 0;
 }
