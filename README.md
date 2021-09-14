@@ -2,9 +2,13 @@
 
 A distributed sat solver implemented in c.
 
+
+### Configure the `.env` file
+The `.env` file is used by the `docker/docker.sh` bash script to build the docker image and run the container.
+
+To create the `.env` file, use the template in the `sample_dot_env` file, or rename it to `.env`.
+
 ### Build the docker image and run the project container
-
-
 ```console
 $ chmod +x ./docker/docker.sh
 ```
