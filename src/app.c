@@ -21,10 +21,6 @@ int main(int argc, char * argv[]) {
     
     int fileCount = argc - 1;
     int shmSize = fileCount * MAX_SLAVE_OUTPUT;
-
-    FILE * outputFile = fopen(OUTPUT_FILE_NAME, "w");
-    if (outputFile == NULL)
-        fexit("Error: Coudln't open output file");
     
     shmADT shm = newShm();
     if (shm == NULL)
@@ -45,12 +41,16 @@ int main(int argc, char * argv[]) {
     if (createSlaves(dispatcher) == DISPATCHER_ERROR)
         fexit("Error: Couldn't initialize slaves");
     
-    // sleep(60);
+    sleep(60);
 
     if (beginDispatching(dispatcher) == DISPATCHER_ERROR)
         fexit("Error: Couldn't dispatch files");
 
     sleep(2);
+
+    FILE * outputFile = fopen(OUTPUT_FILE_NAME, "w");
+    if (outputFile == NULL)
+        fexit("Error: Coudln't open output file");
 
     char buffer[MAX_SLAVE_OUTPUT];
     for (int filesReceived = 0; filesReceived < fileCount; ) {

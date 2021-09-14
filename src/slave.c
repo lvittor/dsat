@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
             
             snprintf(output, MAX_SLAVE_OUTPUT, "Filename:\t%s", pathBuffer);
             while (! fgetsn(buffer, BUFFER_SIZE, fp)) {
-                strncat(output, DELIMITER , MAX_SLAVE_OUTPUT);
+                strncat(output, DELIMITER, MAX_SLAVE_OUTPUT);
                 strncat(output, buffer, MAX_SLAVE_OUTPUT);
             }
 

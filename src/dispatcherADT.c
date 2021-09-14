@@ -73,11 +73,14 @@ int createSlaves(dispatcherADT dispatcher) {
             return DISPATCHER_ERROR;
 
         else if (pid == 0) {
-            close(dispatcher->in[FD_PER_PIPE * i + READ]);
-            close(dispatcher->out[FD_PER_PIPE * i + WRITE]);
-
             dup2(dispatcher->out[FD_PER_PIPE * i + READ], STDIN_FILENO);
             dup2(dispatcher->in[FD_PER_PIPE * i + WRITE], STDOUT_FILENO);
+
+            for (int j = 0; j <= i; j++) {
+                close(dispatcher->out[FD_PER_PIPE * j + WRITE]);
+                close(dispatcher->in[FD_PER_PIPE * j + READ]);
+            }
+            
             execl("out/slave", "slave", (char *)NULL);
 
             return DISPATCHER_ERROR;
