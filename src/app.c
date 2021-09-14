@@ -32,21 +32,17 @@ int main(int argc, char * argv[]) {
     printf("%d\n", fileCount);
     fflush(stdout);
 
-    sleep(WAIT_SECONDS_VIEW);
-
     dispatcherADT dispatcher = newDispatcher("out/slave", NUMBER_SLAVES_REQUEST, argv + 1, fileCount);
     if (dispatcher == NULL)
         fexit("Error: Couldn't create dispatcher ADT");
     
     if (createSlaves(dispatcher) == DISPATCHER_ERROR)
         fexit("Error: Couldn't initialize slaves");
-    
-    sleep(60);
 
     if (beginDispatching(dispatcher) == DISPATCHER_ERROR)
         fexit("Error: Couldn't dispatch files");
 
-    sleep(2);
+    sleep(WAIT_SECONDS_VIEW);
 
     FILE * outputFile = fopen(OUTPUT_FILE_NAME, "w");
     if (outputFile == NULL)
