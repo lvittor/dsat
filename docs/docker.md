@@ -2,7 +2,7 @@
 
 
 
-### Give execute permission to **`control_docker.sh`**
+### Give execute permission to **`docker.sh`**
 
 ```console
 $ chmod +x ./docker/docker.sh

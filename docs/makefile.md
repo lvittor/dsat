@@ -5,9 +5,9 @@ Then, in order to run the files, run `out/app $(DIRECTORIES) | out/view` where D
 
 It is also possible to execute the program the following way:
 ```bash
->> out/app $(DIRECTORIES) &
+$ out/app $(DIRECTORIES) &
 <info>
->> out/view <info>
+$ out/view <info>
 ```
 Where one must input manually the info provided by the app program.
 
